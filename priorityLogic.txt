@@ -1,0 +1,40 @@
+Priority Update:
+//we will apply bfs to calculate priority radially outwards from the possible next positions of the detective. We achieve this by assigning layers to each node the the final key value for a node will be the summation of all the layers applied on it.
+
+setPriority(Detective pos):
+Adjmatrix;
+for(i=0;i<d;i++)//d is number of detectives on graph
+{
+	For (j=0;j<n;j++)//n is the number of nodes
+	{
+		if(adjmatrix[detectivepos[i],j] == 1)//checking the available paths for the detective to move.
+		{	
+			nodePriority[j]=0;
+			BFS(j);
+		}
+	}
+}
+BFS(j)
+{   
+    
+    readyQueue;
+    readyQueue.push(node(j))
+    while(readyQueue is not empty)
+    {
+      if(node(j) is not visited)
+      {
+        node(j) set to visited;
+        Node parent=j;
+        pop node j from queue;
+        for(all nodes ittrating with i)
+        {
+          if(there exist a path from node(j) to any node(i) in graph and that node is not visted)
+          {
+            readyQueue.push(node(i))
+            nodePriority[i]=parent.priority+1
+            
+          }
+        }
+      }
+    }
+}
