@@ -1,20 +1,29 @@
 #include <iostream>
 #include <queue>
 #include <vector>
+#include <ctime>
+#include <cstdlib>
+#include <stdlib.h>
 using namespace std;
-class Logic
+
+class Logic 
 {
-public:
-    vector<int> l0 = {1, 35, 36};
-    vector<int> l1 = {0, 8, 2};
-    vector<int> l2 = {1, 6, 3};
-    vector<int> l3 = {4, 5, 2};
-    vector<int> l4 = {3, 5};
-    vector<int> l5 = {3, 4, 6, 12};
-    vector<int> l6 = {2, 5, 7, 11};
-    vector<int> l7 = {6, 8, 10};
-    vector<int> l8 = {1, 7, 9};
-    vector<int> l9 = {8, 18, 30, 31, 34};
+private:
+  int mrXPos;
+  int mrXVisible=-1;
+  int turnNumber;
+  bool gameEnd=false;
+public:  //All connected nodes of graph are given below
+    vector<int> l0 =  {1, 35, 36}; 
+    vector<int> l1 =  {0, 2, 8};
+    vector<int> l2 =  {1, 6, 3};
+    vector<int> l3 =  {4, 5, 2};
+    vector<int> l4 =  {3, 5};
+    vector<int> l5 =  {3, 4, 6, 12};
+    vector<int> l6 =  {2, 5, 7, 11};
+    vector<int> l7 =  {6, 8, 10};
+    vector<int> l8 =  {1, 7, 9};
+    vector<int> l9 =  {8, 10, 18, 30, 31, 34};
     vector<int> l10 = {7, 9, 11};
     vector<int> l11 = {6, 10, 12, 17};
     vector<int> l12 = {5, 11, 13};
@@ -34,38 +43,34 @@ public:
     vector<int> l26 = {25, 27, 28};
     vector<int> l27 = {26, 28, 33};
     vector<int> l28 = {26, 27, 29, 33};
-    vector<int> l29 = {25, 28, 30, 33};
-    vector<int> l30 = {20, 29, 31};
+    vector<int> l29 = {25, 28, 30, 31, 32};
+    vector<int> l30 = {9,20,24, 29, 31};
     vector<int> l31 = {9, 29, 30, 35};
     vector<int> l32 = {29, 33, 35};
     vector<int> l33 = {27, 28, 32};
     vector<int> l34 = {9, 35};
-    vector<int> l35 = {31, 32, 34, 36};
+    vector<int> l35 = {0,31, 32, 34, 36};
     vector<int> l36 = {0, 35};
-    //adjecencey list
+    //adjacencey list
     vector<int> adjList[37] = {l0, l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12, l13, l14, l15, l16, l17, l18, l19, l20, l21, l22, l23, l24, l25, l26, l27, l28, l29, l30, l31, l32, l33, l34, l35, l36};
-    int pos[2] = {35, 21};//detective
-    int priority[37] = {0};
-    void updatePriority()
+    vector <int> DetectivePos = {-1,-1};// detective's initial location 
+    int priority[37] = {0}; //all priority are set to false
+    void updateKeyValues() //function of updating detective's position
     {
         for (int i = 0; i < 2; i++)
         {
             
-            layering(pos[i]);
-        }
-    }
-    void layering(int val)
-    {
-        queue<int> readyQueue;
+        int val=DetectivePos[i];
+        queue<int> readyQueue;//initializing queue
         readyQueue.push(val);
         bool visited[37] = {0};
         visited[val] = 1;
-        int p[37] = {0};
-        while (!readyQueue.empty())
+        int p[37] = {0};//indiviusal priority
+        while (!readyQueue.empty())//BFS
         {
             int current = readyQueue.front();
             readyQueue.pop();
-            cout << current << endl;
+            //cout << current << endl;
             for (auto x : adjList[current])
             {
                 if (!visited[x])
@@ -74,47 +79,193 @@ public:
                     readyQueue.push(x);
                     visited[x] = 1;
                     p[x] = p[current] + 1;
-                    cout << x << " " << p[x] << endl;
+                    //cout << x << " " << p[x] << endl;
                 }
             }
         }
-        cout << "***********************" << endl;
+        //cout << "***********************" << endl;
         for (int i = 0; i < 37; i++)
         {
-            priority[i] += p[i];
+            priority[i] += p[i];//here we are adding the indivisual genrated layers to the over all hueristic
         }
-        /*for(int i=0;i<10;i++)
-      {
-          cout<<i<<" - "<<priority[i]<<endl;
-      }*/
-    }
-    void print()
-    {
-        for (int i = 0; i < 37; i++)
-        {
-            cout << i << " - " << priority[i] << endl;
+        priority[val]=-1000;//setting the position of detective to -1000 as a no region and a condition check
         }
-        findMax();
+       
     }
-    void findMax()
-    {
-        int max = 0;
-        int m = 0;
-        for (int i = 0; i < 37; i++)
-        {
-            if (priority[i] > max)
-            {
-                max = priority[i];
-                m = i;
-            }
-        }
-        cout << m << ":" << max << endl;
-    }
+  void gameStart() //function by which our game starts.
+  {
+    turnNumber=1;//initializing turn number to 1
+    int a=0, b=0, c=0;//temporary variables
+   do
+    {      
+      srand(time(0));  // Initialize random node generator for all the 3 players(initializing the seed with a number from the time so as to keep the genration totaly random)
+      a=rand() % 37;   // %number indicates the max value that can be genrated randomly
+      b=rand() % 37;
+      c=rand() % 37;
+      cout<<endl;
+    } while(a==b || b==c || c==a);//condition to make sure no 2 values are same
+    DetectivePos[0]=a;
+    DetectivePos[1]=b;
+    mrXPos=c;
+    gameLoop();
     
+  }
+  void moveX() //this fuction defines the movement of Mr.X this follows a greedy approach based on the hueristc genrated in the funcion updateKeyValues()
+  { 
+      int choose=-1;//defining to an impossible situation
+      int value=0;
+      for(auto y: adjList[mrXPos])//itrating over possible values mr.X can traverse to
+      { 
+        if(priority[y]>value && priority[y]>0)//condition to check if move is valid and better then the other options
+        {
+          value =priority[y];//updating max
+          choose=y;
+        }
+      }
+      if (choose == -1)//the case where mr.X had moves where he is caught
+      {
+        cout<<"Mr.X was caught no more possible moves";
+        exit(0);
+
+      }
+      else
+      mrXPos=choose;
+  }
+  bool checker(int pos, int current)//checking for the possible moves for the detective to move
+  {
+    
+      for(auto y: DetectivePos)
+      {
+        if(pos == y)
+        {
+          return false;
+        }
+      }
+      
+    
+    return true;
+  }
+  void moveDetective() //function which tells us the current and next position of detective and gives us option to select next loaction too
+  {
+    for(int x=0;x<2;x++)
+    {
+       int temp=0;
+       cout<<"current position of detective "<<DetectivePos[x]<<endl;
+       cout<<"options to which you can move: ";
+       for(auto y: adjList[DetectivePos[x]])
+       {
+         if(!checker(y,DetectivePos[x]))
+         cout<<y<<"(Detective) ";
+         else
+         cout<<y<<" ";
+       }
+       cout<<endl;
+       do
+       {
+   
+        cout<<"please enter your choice"<<endl;
+        cin>>temp;
+
+       }while(!validMove(x,temp));
+    }
+  }
+  bool validMove(int current,int pos )
+  { 
+    bool possibleMove=false;
+    bool invalidMove=false;
+    for(auto x:adjList[DetectivePos[current]])
+    {
+      if(pos==x)
+      {
+        possibleMove=true;
+      }
+    }
+    if(!possibleMove)
+    {
+      cout<<"invalid move please try again"<<endl;
+      return false;
+    }
+    for(auto x: DetectivePos)
+    {
+      if(pos == x)
+      {
+        invalidMove=true;
+      }
+    }
+    if(invalidMove)
+    {
+      cout<<"there is a detective at that position"<<endl;
+      return false;
+    }
+    DetectivePos[current]=pos;
+    return true;
+    
+  }
+  void revealXPos() // function telling us the current position of Mr. X .
+  {
+    cout<<"Mr.X was at position:"<<mrXPos<<endl;
+    mrXVisible=mrXPos;
+  }
+  int checkCondition()  //function checking if detective has caught Mr. X or not .
+  {
+    bool mrXCaught=false;
+    bool mrXSurvived=false;
+    for(auto x:DetectivePos)
+    {
+      if(x == mrXPos)
+      {
+        mrXCaught = true;
+      }
+      if(turnNumber == 30)
+      {
+        mrXSurvived=true;
+      }
+      if(mrXCaught)
+      {
+        cout<<"Mr.X was caught"<<endl;
+        gameEnd=true;
+        break;
+      }
+      else if(mrXSurvived)
+      {
+        cout<<"30 turns are over Mr.X survived";
+        gameEnd=true;
+        break;
+      }
+    }
+    return 0;
+  }
+  int gameLoop()
+  {
+    do
+    {
+      cout<<"***************** turn "<<turnNumber<<" *****************"<<endl;
+      cout<<"current detective pos:";
+      for(auto x:DetectivePos)
+      {
+        cout<<x<<" ";
+      }
+      cout<<endl;
+      
+      updateKeyValues();
+      
+      moveX();
+      //cout<<"current mr.X postion: "<<mrXPos<<endl;
+      moveDetective();
+      if (turnNumber == 3 || turnNumber == 8 || turnNumber == 13 || turnNumber == 18 || turnNumber == 24)
+      {
+        revealXPos();
+      }
+      turnNumber++;
+      
+      checkCondition();
+    }while(!gameEnd);
+    return 0;
+  }
 };
 int main()
 {
     Logic one;
-    one.updatePriority();
-    one.print();
+    one.gameStart();
 }
+
