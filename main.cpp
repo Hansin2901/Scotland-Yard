@@ -129,6 +129,14 @@ public:  //All connected nodes of graph are given below
       }
       else
       mrXPos=choose;
+      resetPriority();
+  }
+  void resetPriority()
+  {
+      for(int i=0;i<37;i++)
+      {
+          priority[i]=0;
+      }
   }
   bool DetectiveChecker(int pos, int current)//checking for the possible moves for the detective to move
   {
@@ -242,6 +250,7 @@ public:  //All connected nodes of graph are given below
       cout<<"current detective pos: ";
       for(auto x:DetectivePos)
       {
+
         cout<<x<<" ";
       }
       cout<<endl;
@@ -249,7 +258,7 @@ public:  //All connected nodes of graph are given below
       updateKeyValues(); 
       
       moveX();
-      //cout<<"current mr.X postion: "<<mrXPos<<endl;
+      cout<<"current mr.X postion: "<<mrXPos<<endl;
       if(!gameEnd)
       {
         moveDetective();
